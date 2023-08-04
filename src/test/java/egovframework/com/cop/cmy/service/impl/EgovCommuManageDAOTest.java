@@ -21,6 +21,7 @@ import egovframework.com.cmm.LoginVO;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import egovframework.com.cop.cmy.service.Community;
 import egovframework.com.cop.cmy.service.CommunityUser;
+import egovframework.com.cop.cmy.service.CommunityUserVO;
 import egovframework.com.cop.cmy.service.CommunityVO;
 import egovframework.com.test.EgovTestAbstractDAO;
 import lombok.RequiredArgsConstructor;
@@ -109,6 +110,8 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
 
         if (loginVO != null) {
             cmmntyUser.setEmplyrId(loginVO.getUniqId());
+            cmmntyUser.setFrstRegisterId(loginVO.getUniqId());
+            cmmntyUser.setLastUpdusrId(loginVO.getUniqId());
         }
 
         cmmntyUser.setMngrAt("Y");
@@ -148,6 +151,7 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
         if (loginVO != null) {
             // 최초등록자ID 설정
             community.setFrstRegisterId(loginVO.getUniqId());
+            community.setLastUpdusrId(loginVO.getUniqId());
         }
 
         // 커뮤니티 등록
@@ -362,29 +366,28 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "A", communityUserVO.getMberSttus());
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "P", resultList.get(0).getMberSttus());
 //    }
-//
-//    @Test
-//    public void testDeleteCommuUser() {
-//        // given
-//        CommunityUser communityUser = new CommunityUser();
-//        testData(communityUser);
-//
-//        assertTrue(egovMessageSource.getMessage(FAIL_COMMON_SELECT),
-//                0 < egovCommuManageDAO.checkExistUser(communityUser));
-//
-//        CommunityUserVO communityUserVO = new CommunityUserVO();
-//        communityUserVO.setCmmntyId(communityUser.getCmmntyId());
-//        communityUserVO.setEmplyrId(communityUser.getEmplyrId());
-//        communityUserVO.setMberSttus(communityUser.getMberSttus());
-//        communityUserVO.setFirstIndex(0); // LIMIT 0부터 가져 오기
-//
-//        // when
-//        egovCommuManageDAO.deleteCommuUser(communityUserVO);
-//
-//        // then
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 0, egovCommuManageDAO.checkExistUser(communityUser));
-//    }
-//
+
+    /**
+     * testDeleteCommuUser
+     */
+    @Test
+    public void testDeleteCommuUser() {
+        // given
+        final CommunityUser cmmntyUser = new CommunityUser();
+        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+        testUser(cmmntyUser, loginVO);
+
+        final CommunityUserVO cmmntyUserVO = new CommunityUserVO();
+        cmmntyUserVO.setCmmntyId(cmmntyUser.getCmmntyId());
+        cmmntyUserVO.setEmplyrId(cmmntyUser.getEmplyrId());
+
+        // when
+        int result = egovCommuManageDAO.deleteCommuUser(cmmntyUserVO);
+
+        // then
+        assertEquals(egovMessageSource.getMessage("fail.common.delete"), 1, result);
+    }
+
 //    @Test
 //    public void testInsertCommuUserAdmin() {
 //        // given

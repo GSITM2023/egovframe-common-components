@@ -40,8 +40,8 @@ public class EgovCommuManageDAO extends EgovComAbstractDAO{
 		update("CommuManage.insertCommuUser", cmmntyUserVO);
 	}
 
-	public void deleteCommuUser(CommunityUserVO cmmntyUserVO) {
-		delete("CommuManage.deleteCommuUser", cmmntyUserVO);
+	public int deleteCommuUser(CommunityUserVO cmmntyUserVO) {
+		return delete("CommuManage.deleteCommuUser", cmmntyUserVO);
 	}
 
 	public void insertCommuUserAdmin(CommunityUserVO cmmntyUserVO) {
