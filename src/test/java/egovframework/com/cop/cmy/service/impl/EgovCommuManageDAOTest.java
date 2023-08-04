@@ -382,37 +382,37 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
         cmmntyUserVO.setEmplyrId(cmmntyUser.getEmplyrId());
 
         // when
-        int result = egovCommuManageDAO.deleteCommuUser(cmmntyUserVO);
+        final int result = egovCommuManageDAO.deleteCommuUser(cmmntyUserVO);
 
         // then
         assertEquals(egovMessageSource.getMessage("fail.common.delete"), 1, result);
     }
 
-//    @Test
-//    public void testInsertCommuUserAdmin() {
-//        // given
-//        CommunityUser communityUser = new CommunityUser();
-//        communityUser.setMberSttus("P"); // 가입 승인 상태
-//        testData(communityUser);
-//
-//        CommunityUserVO communityUserVO = new CommunityUserVO();
-//        communityUserVO.setCmmntyId(communityUser.getCmmntyId());
-//        communityUserVO.setEmplyrId(communityUser.getEmplyrId());
-//        communityUserVO.setMngrAt(communityUser.getMngrAt());
-//        communityUserVO.setFirstIndex(0); // LIMIT 0부터 가져 오기
-//
-//        // when
-//        egovCommuManageDAO.insertCommuUserAdmin(communityUserVO);
-//
-//        // then
-//        List<CommunityUser> resultList = egovCommuManageDAO.selectCommuUserList(communityUserVO);
-//        // log.debug("resultList = {}", resultList);
-//
-//        assertTrue(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 0 < resultList.size());
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "N", communityUserVO.getMngrAt());
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "Y", resultList.get(0).getMngrAt());
-//    }
-//
+    /**
+     * testInsertCommuUserAdmin
+     */
+    @Test
+    public void testInsertCommuUserAdmin() {
+        // given
+        final CommunityUser cmmntyUser = new CommunityUser();
+        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+        testUser(cmmntyUser, loginVO);
+
+        final CommunityUserVO cmmntyUserVO = new CommunityUserVO();
+        if (loginVO != null) {
+            cmmntyUserVO.setLastUpdusrId(loginVO.getUniqId());
+        }
+        cmmntyUserVO.setCmmntyId(cmmntyUser.getCmmntyId());
+        cmmntyUserVO.setEmplyrId(cmmntyUser.getEmplyrId());
+
+        // when
+        // TODO 이백행 2023-08-05 insertCommuUserAdmin 을 updateCommuUserAdmin 로 수정
+        final int result = egovCommuManageDAO.insertCommuUserAdmin(cmmntyUserVO);
+
+        // then
+        assertEquals(egovMessageSource.getMessage("fail.common.update"), 1, result);
+    }
+
 //    @Test
 //    public void testDeleteCommuUserAdmin() {
 //        // given
