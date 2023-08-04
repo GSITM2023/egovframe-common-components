@@ -94,42 +94,25 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
     @Qualifier("egovCmmntyIdGnrService")
     private EgovIdGnrService egovCmmntyIdGnrService;
 
-//    /**
-//     * 테스트 사용자 생성
-//     *
-//     */
-//    private void testUser(CommunityUser communityUser) {
-//        final LoginVO user = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
-//
-//        // 커뮤니티ID 설정
-//        if (communityUser.getCmmntyId().isEmpty()) {
-//            fail("테스트 사용자 생성 실패(커뮤니티ID 누락)");
-//        }
-//
-//        // 업무사용자ID 설정
-//        communityUser.setEmplyrId(user == null ? "" : EgovStringUtil.isNullToString(user.getUniqId()));
-//
-//        // 관리자여부 설정
-//        if (communityUser.getMngrAt().isEmpty()) {
-//            communityUser.setMngrAt("N");
-//        }
-//
-//        // 사용자상태 설정
-//        // A 가입신청 회원가입신청상태
-//        // P 가입승인 회원가입승인상태
-//        // D 가입삭제 회원가입삭제상태
-//        if (communityUser.getMberSttus().isEmpty()) {
-//            communityUser.setMberSttus("A");
-//        }
-//
-//        // 사용여부 설정
-//        communityUser.setUseAt("Y");
-//
-//        // 최초사용자ID 설정
-//        communityUser.setFrstRegisterId(user == null ? "" : EgovStringUtil.isNullToString(user.getUniqId()));
-//
-//        egovCommuManageDAO.insertCommuUserRqst(communityUser);
-//    }
+    /**
+     * 테스트 사용자 생성
+     *
+     */
+    private void testUser(final CommunityUser cmmntyUser, final LoginVO loginVO) {
+        final Community community = new Community();
+        testData(community, loginVO);
+
+        cmmntyUser.setCmmntyId(community.getCmmntyId());
+
+        if (loginVO != null) {
+            cmmntyUser.setEmplyrId(loginVO.getUniqId());
+        }
+
+        cmmntyUser.setMngrAt("Y");
+        cmmntyUser.setUseAt("Y");
+
+        egovCommuManageDAO.insertCommuUserRqst(cmmntyUser);
+    }
 
     /**
      * 테스트 커뮤니티, 테스트 사용자 생성
@@ -158,9 +141,11 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
 //
 //        // 템플릿ID
 //        community.setTmplatId("TMPT02"); // 커뮤니티 템플릿
-//
-//        // 최초등록자ID 설정
-//        community.setFrstRegisterId(loginVO.getUniqId());
+
+        if (loginVO != null) {
+            // 최초등록자ID 설정
+            community.setFrstRegisterId(loginVO.getUniqId());
+        }
 
         // 커뮤니티 등록
         egovCommuMasterDAO.insertCommuMaster(community);
@@ -172,31 +157,36 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
 //        testUser(communityUser);
     }
 
-//    @Test
-//    public void testSelectSingleCommuUserDetail() {
-//        // given
-//        CommunityUser communityUser = new CommunityUser();
-//        testData(communityUser);
-//        // log.debug("communityUser = {}, {}", communityUser.getEmplyrId(), communityUser.getCmmntyId());
-//
-//        // when
-//        CommunityUser resultCommunityUser = egovCommuManageDAO.selectSingleCommuUserDetail(communityUser);
-//
-//        // then
-//        assertNotNull(resultCommunityUser);
-//
-//        // given
-//        CommunityUser communityNoUser = new CommunityUser();
-//        communityNoUser.setCmmntyId(communityUser.getCmmntyId());
-//        communityNoUser.setEmplyrId("00000000000"); // 존재하지 않는 사용자ID
-//
-//        // when
-//        resultCommunityUser = egovCommuManageDAO.selectSingleCommuUserDetail(communityNoUser);
-//
-//        // then
-//        assertNull(resultCommunityUser);
-//    }
-//
+    /**
+     * testSelectSingleCommuUserDetail
+     */
+    @Test
+    public void testSelectSingleCommuUserDetail() {
+        // given
+        final CommunityUser cmmntyUser = new CommunityUser();
+        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+        testUser(cmmntyUser, loginVO);
+
+        // when
+        final CommunityUser resultCommunityUser = egovCommuManageDAO.selectSingleCommuUserDetail(cmmntyUser);
+
+        if (log.isDebugEnabled()) {
+            log.debug("cmmntyUser, resultCommunityUser = {}, {}", cmmntyUser, resultCommunityUser);
+            log.debug("getMngrAt = {}, {}", cmmntyUser.getMngrAt(), resultCommunityUser.getMngrAt());
+            log.debug("getUseAt = {}, {}", cmmntyUser.getUseAt(), resultCommunityUser.getUseAt());
+        }
+
+        // then
+        assert1(cmmntyUser, resultCommunityUser);
+    }
+
+    private void assert1(final CommunityUser cmmntyUser, final CommunityUser resultCommunityUser) {
+        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), cmmntyUser.getMngrAt(),
+                resultCommunityUser.getMngrAt());
+        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), cmmntyUser.getUseAt(),
+                resultCommunityUser.getUseAt());
+    }
+
 //    @Test
 //    public void testSelectCommuManagerList() {
 //        // given
