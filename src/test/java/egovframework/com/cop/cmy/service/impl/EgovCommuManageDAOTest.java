@@ -2,6 +2,8 @@ package egovframework.com.cop.cmy.service.impl;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import egovframework.com.cmm.LoginVO;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import egovframework.com.cop.cmy.service.Community;
 import egovframework.com.cop.cmy.service.CommunityUser;
+import egovframework.com.cop.cmy.service.CommunityVO;
 import egovframework.com.test.EgovTestAbstractDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -187,40 +190,38 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
                 resultCommunityUser.getUseAt());
     }
 
-//    @Test
-//    public void testSelectCommuManagerList() {
-//        // given
-//        CommunityUser communityUser = new CommunityUser();
-//        communityUser.setMngrAt("Y"); // 관리자권한을 가진 사용자 생성
-//        testData(communityUser);
-//
-//        CommunityVO communityVO = new CommunityVO();
-//        communityVO.setCmmntyId(communityUser.getCmmntyId());
-//
-//        // when
-//        List<CommunityUser> resultList = egovCommuManageDAO.selectCommuManagerList(communityVO);
-//        // log.info("resultList=[{}]", resultList);
-//        for (final CommunityUser result : resultList) {
-//            if (log.isDebugEnabled()) {
-//                log.debug("result={}", result);
-//            }
-//        }
-//
-//        // then
-//        assertTrue(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 0 < resultList.size());
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), communityUser.getEmplyrId(), resultList.get(0).getEmplyrId());
-//
-//        // given
-//        CommunityVO noCommunityVO = new CommunityVO();
-//        noCommunityVO.setCmmntyId("CMMNTY_00000000000000");
-//
-//        // when
-//        resultList = egovCommuManageDAO.selectCommuManagerList(noCommunityVO);
-//
-//        // then
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 0, resultList.size());
-//    }
-//
+    /**
+     * testSelectCommuManagerList
+     */
+    @Test
+    public void testSelectCommuManagerList() {
+        // given
+        final CommunityUser cmmntyUser = new CommunityUser();
+        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+        testUser(cmmntyUser, loginVO);
+
+        final CommunityVO cmmntyVO = new CommunityVO();
+        cmmntyVO.setCmmntyId(cmmntyUser.getCmmntyId());
+
+        // when
+        final List<CommunityUser> resultList = egovCommuManageDAO.selectCommuManagerList(cmmntyVO);
+        // log.info("resultList=[{}]", resultList);
+        for (final CommunityUser result : resultList) {
+            if (log.isDebugEnabled()) {
+                log.debug("result={}", result);
+                log.debug("getEmplyrId={}, {}", cmmntyUser.getEmplyrId(), result.getEmplyrId());
+                log.debug("getEmplyrNm={}, {}", cmmntyUser.getEmplyrNm(), result.getEmplyrNm());
+            }
+
+            // then
+            assertSelectCommuManagerList(cmmntyUser, result);
+        }
+    }
+
+    private void assertSelectCommuManagerList(final CommunityUser cmmntyUser, final CommunityUser result) {
+        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), cmmntyUser.getEmplyrId(), result.getEmplyrId());
+    }
+
 //    @Test
 //    public void testCheckExistUser() {
 //        // given
