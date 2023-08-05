@@ -123,84 +123,39 @@ public class SndngMailRegistDAOTest extends EgovTestAbstractDAO {
 //        FileInputStream fileInputStream = new FileInputStream(new File(path));
 //        return new MockMultipartFile(fileName, fileName + "." + contentType, contentType, fileInputStream);
 //    }
-//
-//    /**
-//     * 메일, 첨부파일 데이터 생성
-//     *
-//     */
-//    private void testData(SndngMailVO sndngMailVO) {
-//        // 메시지ID 설정
-//        String mssageId = "";
-//        try {
-//            mssageId = egovMailMsgIdGnrService.getNextStringId();
-//        } catch (FdlException eFdl) {
-//            log.error("FdlException egovMailMsgIdGnrService");
-//            fail("FdlException egovMailMsgIdGnrService");
-//        }
-//        sndngMailVO.setMssageId(mssageId);
-//        /**
-//         * 발송결과코드(CDK-COM-024) 설정
-//         * R   요청
-//         * F   실패
-//         * C   완료
-//         **/
-//        if (StringUtils.defaultIfBlank(sndngMailVO.getSndngResultCode(), "").isEmpty()) {
-//            sndngMailVO.setSndngResultCode("C");
-//        }
-//        sndngMailVO.setSj("[테스트메일] 단위 테스트"); // 제목 설정
-//
-//        List<FileVO> _result = new ArrayList<FileVO>();
-//        String _atchFileId = "";
-//        MockMultipartFile mockMultipartFile = null;
-//        try {
-//            // 이미 존재하는 sample.png 파일로 첨부파일 mocking
-//            mockMultipartFile = getMockMultipartFile("sample.png", "png", "src/test/resources/egovframework/data/sample.png");
-//        } catch (IOException eIO) {
-//            log.error("IOException MultipartFile create");
-//            fail("IOException MultipartFile create");
-//        }
-//
-//        final Map<String, MultipartFile> files = new HashMap<String, MultipartFile>();
-//        files.put("sample.png", mockMultipartFile);
-//
-//        // 첨부파일 생성
-//        try {
-//            _result = fileUtil.parseFileInf(files, "MSG_", 0, "", "");
-//            _atchFileId = fileMngService.insertFileInfs(_result);
-//        } catch (Exception e) {
-//            log.error("Exception Mail attach file insert");
-//            fail("Exception Mail attach file insert");
-//        } // 파일이 생성되고나면 생성된 첨부파일 ID를 리턴한다.
-//
-//        String orignlFileList = "";
-//        for (int i = 0; i < _result.size(); i++) {
-//            FileVO fileVO = _result.get(i);
-//            orignlFileList = fileVO.getOrignlFileNm();
-//        }
-//
-//        LoginVO user = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
-//        // 발신자 설정
-//        sndngMailVO.setDsptchPerson(user == null ? "" : EgovStringUtil.isNullToString(user.getId()));
-//        // 수신자 설정
-//        sndngMailVO.setRecptnPerson("open.egovframe@gmail.com"); // 수신자 설정
-//        sndngMailVO.setAtchFileId(_atchFileId); // 첨부파일ID 설정
-//        // 첨부파일명 설정
-//        sndngMailVO.setOrignlFileNm(orignlFileList);
-//
-//        // 발송메일을 등록
-//        try {
-//            sndngMailRegistDAO.insertSndngMail(sndngMailVO);
-//        } catch (Exception e) {
+
+    /**
+     * 메일, 첨부파일 데이터 생성
+     *
+     */
+    private void testData(final SndngMailVO sndngMailVO, final LoginVO loginVO) {
+        try {
+            sndngMailVO.setMssageId(egovMailMsgIdGnrService.getNextStringId());
+        } catch (FdlException eFdl) {
+            log.error("FdlException egovMailMsgIdGnrService");
+        }
+
+        if (loginVO != null) {
+            sndngMailVO.setDsptchPerson(loginVO.getId());
+        }
+
+        sndngMailVO.setRecptnPerson("dlqorgod@nave.com");
+        sndngMailVO.setSj("test 이백행 제목 " + LocalDateTime.now());
+
+        try {
+            sndngMailRegistDAO.insertSndngMail(sndngMailVO);
+        } catch (Exception e) {
 //            e.printStackTrace();
-//        }
-//    }
+            log.error("Exception insertSndngMail testData");
+        }
+    }
 
     /**
      * 발송메일 발송 테스트
      */
     @Test
     public void testInsertSndngMail() {
-        // given, when
+        // given
         final SndngMailVO sndngMailVO = new SndngMailVO();
         final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
 
@@ -272,43 +227,35 @@ public class SndngMailRegistDAOTest extends EgovTestAbstractDAO {
 //        assertTrue(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 0 < resultList.size());
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), sndngMailVO.getAtchFileId(), resultList.get(0).getAtchFileId());
 //    }
-//
-//    /**
-//     * 발송메일의 발송상태 업데이트 테스트
-//     */
-//    @Test
-//    public void testUpdateSndngMail() {
-//        // given, when
-//        SndngMailVO sndngMailVO = new SndngMailVO();
-//        sndngMailVO.setSndngResultCode("R"); // 발송상태를 '요청'으로 생성
-//        testData(sndngMailVO);
-//        // log.debug("sendmail info = {}, {}", sndngMailVO.getMssageId(), sndngMailVO.getAtchFileId());
-//
-//        // when
-//        SndngMailVO updatedMailVO = new SndngMailVO();
-//        updatedMailVO.setMssageId(sndngMailVO.getMssageId());
-//        updatedMailVO.setSndngResultCode("C"); // 발송상태를 'C: 완료'로 업데이트
-//
-//        try {
-//            sndngMailRegistDAO.updateSndngMail(updatedMailVO);
-//        } catch (Exception e) {
-//            log.error("Exception Update Mail sndng result code");
-//            fail("Exception Update Mail sndng result code");
-//        }
-//
-//        // then
-//        SndngMailVO result = null;
-//        try {
-//            result = sndngMailDetailDAO.selectSndngMail(sndngMailVO);
-//        } catch (Exception e) {
-//            log.error("Exception Select Mail Infomation");
-//            fail("Exception Select Mail Infomation");
-//        }
-//
-//        assertNotNull(egovMessageSource.getMessage(FAIL_COMMON_SELECT), result);
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "R", sndngMailVO.getSndngResultCode());
-//        // R: 요청, F: 실패, C: 완료
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "완료", result.getSndngResultCode());
-//    }
+
+    /**
+     * 발송메일의 발송상태 업데이트 테스트
+     */
+    @Test
+    public void testUpdateSndngMail() {
+        // given
+        final SndngMailVO sndngMailVO = new SndngMailVO();
+        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+        testData(sndngMailVO, loginVO);
+
+        // COM024 발송결과구분
+        // C 완료
+        // F 실패
+        // R 요청
+        sndngMailVO.setSndngResultCode("C");
+//        sndngMailVO.setSndngResultCode("F");
+//        sndngMailVO.setSndngResultCode("R");
+
+        // when
+        int result = 0;
+        try {
+            result = sndngMailRegistDAO.updateSndngMail(sndngMailVO);
+        } catch (Exception e) {
+            log.error("Exception updateSndngMail");
+        }
+
+        // then
+        assertEquals(egovMessageSource.getMessage("fail.common.update"), 1, result);
+    }
 
 }

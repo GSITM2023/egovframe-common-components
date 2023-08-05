@@ -49,12 +49,11 @@ public class SndngMailRegistDAO extends EgovComAbstractDAO {
 
 	/**
 	 * 발송결과를 수정한다.
-	 * @param vo SndngMailVO
-	 * @return SndngMailVO
+	 * @param sndngMailVO SndngMailVO
+	 * @return int
 	 * @exception Exception
 	 */
-	public SndngMailVO updateSndngMail(SndngMailVO vo) throws Exception {
-		update("sndngMailRegistDAO.updateSndngMail", vo);
-		return new SndngMailVO();
+	public int updateSndngMail(SndngMailVO sndngMailVO) throws Exception {
+		return update("sndngMailRegistDAO.updateSndngMail", sndngMailVO);
 	}
 }
