@@ -39,12 +39,12 @@ public class SndngMailRegistDAO extends EgovComAbstractDAO {
 
 	/**
 	 * 발송할 메일에 있는 첨부파일 목록을 조회한다.
-	 * @param vo SndngMailVO
+	 * @param sndngMailVO SndngMailVO
 	 * @return List
 	 * @exception Exception
 	 */
-	public List<AtchmnFileVO> selectAtchmnFileList(SndngMailVO vo) throws Exception {
-		return selectList("sndngMailRegistDAO.selectAtchmnFileList", vo);
+	public List<AtchmnFileVO> selectAtchmnFileList(SndngMailVO sndngMailVO) throws Exception {
+		return selectList("sndngMailRegistDAO.selectAtchmnFileList", sndngMailVO);
 	}
 
 	/**

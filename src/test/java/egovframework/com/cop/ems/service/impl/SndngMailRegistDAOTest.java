@@ -3,6 +3,7 @@ package egovframework.com.cop.ems.service.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
@@ -17,7 +18,12 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.ContextConfiguration;
 
 import egovframework.com.cmm.LoginVO;
+import egovframework.com.cmm.service.EgovFileMngService;
+import egovframework.com.cmm.service.FileVO;
+import egovframework.com.cmm.service.impl.EgovFileMngServiceImpl;
+import egovframework.com.cmm.service.impl.FileManageDAO;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
+import egovframework.com.cop.ems.service.AtchmnFileVO;
 import egovframework.com.cop.ems.service.SndngMailVO;
 import egovframework.com.test.EgovTestAbstractDAO;
 import lombok.NoArgsConstructor;
@@ -38,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 
         "classpath*:egovframework/spring/com/idgn/context-idgn-MailMsg.xml",
 
-//        "classpath*:egovframework/spring/com/idgn/context-idgn-File.xml",
+        "classpath*:egovframework/spring/com/idgn/context-idgn-File.xml",
 //
 //        "classpath*:egovframework/spring/com/idgn/context-idgn-FileSysMntrng.xml",
 
@@ -52,6 +58,8 @@ import lombok.extern.slf4j.Slf4j;
 
                 "egovframework.com.cop.ems.service.impl",
 
+                "egovframework.com.cmm.service.impl",
+
 //                "egovframework.com.cmm.service",
 
         },
@@ -64,13 +72,13 @@ import lombok.extern.slf4j.Slf4j;
 
                         classes = {
 
-//                                EgovFileMngServiceImpl.class,
-
 //                                EgovFileMngUtil.class,
 
-//                                FileManageDAO.class,
-
                                 SndngMailRegistDAO.class,
+
+                                EgovFileMngServiceImpl.class,
+
+                                FileManageDAO.class,
 
 //                                SndngMailDetailDAO.class,
 
@@ -87,20 +95,20 @@ import lombok.extern.slf4j.Slf4j;
 // @Commit
 public class SndngMailRegistDAOTest extends EgovTestAbstractDAO {
 
-//    /** EgovFileMngService */
-//    @Autowired
+    /** EgovFileMngService */
+    @Autowired
 //    @Qualifier("EgovFileMngService")
-//    private EgovFileMngService fileMngService;
+    private EgovFileMngService egovFileMngService;
 //
 //    /** EgovFileMngUtil */
 //    @Autowired
 //    @Qualifier("EgovFileMngUtil")
 //    private EgovFileMngUtil fileUtil;
 //
-//    /** File ID Generation */
-//    @Autowired
-//    @Qualifier("egovFileIdGnrService")
-//    private EgovIdGnrService egovFileIdGnrService;
+    /** File ID Generation */
+    @Autowired
+    @Qualifier("egovFileIdGnrService")
+    private EgovIdGnrService egovFileIdGnrService;
 
     /** Message ID Generation */
     @Autowired
@@ -147,6 +155,31 @@ public class SndngMailRegistDAOTest extends EgovTestAbstractDAO {
         } catch (Exception e) {
 //            e.printStackTrace();
             log.error("Exception insertSndngMail testData");
+        }
+    }
+
+    private void testData(final FileVO fvo) {
+        try {
+            fvo.setAtchFileId(egovFileIdGnrService.getNextStringId());
+        } catch (FdlException e) {
+//            e.printStackTrace();
+            log.error("FdlException egovFileIdGnrService");
+        }
+        fvo.setFileSn("0");
+        fvo.setFileMg("1");
+
+        String atchFileId = null;
+        try {
+            atchFileId = egovFileMngService.insertFileInf(fvo);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            log.error("Exception insertFileInf");
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("getAtchFileId={}", fvo.getAtchFileId());
+
+            log.debug("atchFileId={}", atchFileId);
         }
     }
 
@@ -199,34 +232,49 @@ public class SndngMailRegistDAOTest extends EgovTestAbstractDAO {
         assertEquals(egovMessageSource.getMessage("fail.common.insert"), 1, result);
     }
 
-//    /**
-//     * 발송메일의 첨부파일 리스트 목록 조회 테스트
-//     */
-//    @Test
-//    public void testSelectAtchmnFileList() {
-//        // given, when
-//        SndngMailVO sndngMailVO = new SndngMailVO();
-//        testData(sndngMailVO);
-//        // log.debug("sendmail info = {}, {}", sndngMailVO.getMssageId(), sndngMailVO.getAtchFileId());
-//
-//        // when
-//        List<AtchmnFileVO> resultList = new ArrayList<AtchmnFileVO>();
-//        try {
-//            resultList = sndngMailRegistDAO.selectAtchmnFileList(sndngMailVO);
-//            for (final AtchmnFileVO result : resultList) {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("atchFileId={}", result.getAtchFileId());
-//                }
-//            }
-//        } catch (Exception e) {
-//            log.error("Exception SelectAll Mail Attachment File");
-//            fail("Exception SelectAll Mail Attachment File");
-//        }
-//
-//        // then
-//        assertTrue(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 0 < resultList.size());
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), sndngMailVO.getAtchFileId(), resultList.get(0).getAtchFileId());
-//    }
+    /**
+     * 발송메일의 첨부파일 리스트 목록 조회 테스트
+     */
+    @Test
+    public void testSelectAtchmnFileList() {
+        // given
+        final FileVO fvo = new FileVO();
+        testData(fvo);
+
+        final SndngMailVO sndngMailVO = new SndngMailVO();
+        sndngMailVO.setAtchFileId(fvo.getAtchFileId());
+
+        // when
+        List<AtchmnFileVO> resultList = null;
+        try {
+            resultList = sndngMailRegistDAO.selectAtchmnFileList(sndngMailVO);
+        } catch (Exception e) {
+            log.error("Exception selectAtchmnFileList");
+        }
+
+        // then
+        assertSelectAtchmnFileList(sndngMailVO, resultList);
+    }
+
+    private void assertSelectAtchmnFileList(final SndngMailVO sndngMailVO, final List<AtchmnFileVO> resultList) {
+        if (log.isDebugEnabled()) {
+            for (final AtchmnFileVO result : resultList) {
+                log.debug("result={}", result);
+                log.debug("atchFileId={}", result.getAtchFileId());
+            }
+        }
+
+        assertSelectAtchmnFileList(sndngMailVO, resultList.get(0));
+    }
+
+    private void assertSelectAtchmnFileList(final SndngMailVO sndngMailVO, final AtchmnFileVO result) {
+        if (log.isDebugEnabled()) {
+            log.debug("getAtchFileId={}, {}", sndngMailVO.getAtchFileId(), result.getAtchFileId());
+        }
+
+        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), sndngMailVO.getAtchFileId(),
+                result.getAtchFileId());
+    }
 
     /**
      * 발송메일의 발송상태 업데이트 테스트
