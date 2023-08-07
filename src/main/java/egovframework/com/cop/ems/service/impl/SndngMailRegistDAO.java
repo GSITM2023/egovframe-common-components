@@ -29,12 +29,12 @@ public class SndngMailRegistDAO extends EgovComAbstractDAO {
 
 	/**
 	 * 발송할 메일을 등록한다
-	 * @param vo SndngMailVO
+	 * @param sndngMailVO SndngMailVO
 	 * @return int
 	 * @exception Exception
 	 */
-	public int insertSndngMail(SndngMailVO vo) throws Exception {
-		return insert("sndngMailRegistDAO.insertSndngMail", vo);
+	public int insertSndngMail(SndngMailVO sndngMailVO) {
+		return insert("sndngMailRegistDAO.insertSndngMail", sndngMailVO);
 	}
 
 	/**

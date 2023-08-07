@@ -29,12 +29,12 @@ public class SndngMailDtlsDAO extends EgovComAbstractDAO {
 
 	/**
 	 * 발송메일 목록을 조회한다.
-	 * @param vo ComDefaultVO
+	 * @param comDefaultVO ComDefaultVO
 	 * @return List
 	 * @exception Exception
 	 */
-	public List<SndngMailVO> selectSndngMailList(ComDefaultVO vo) throws Exception {
-		return selectList("SndngMailDtlsDAO.selectSndngMailList_D", vo);
+	public List<SndngMailVO> selectSndngMailList(ComDefaultVO comDefaultVO) throws Exception {
+		return selectList("SndngMailDtlsDAO.selectSndngMailList_D", comDefaultVO);
 	}
 
 	/**
