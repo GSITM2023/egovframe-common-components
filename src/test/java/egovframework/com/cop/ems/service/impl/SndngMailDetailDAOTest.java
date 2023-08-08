@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 
 import egovframework.com.cmm.LoginVO;
@@ -87,7 +86,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @NoArgsConstructor
 @Slf4j
-@Commit
+//@Commit
 public class SndngMailDetailDAOTest extends EgovTestAbstractDAO {
 //    /** EgovFileMngService */
 //    @Autowired
@@ -126,6 +125,38 @@ public class SndngMailDetailDAOTest extends EgovTestAbstractDAO {
 //        FileInputStream fileInputStream = new FileInputStream(new File(path));
 //        return new MockMultipartFile(fileName, fileName + "." + contentType, contentType, fileInputStream);
 //    }
+
+    private SndngMailVO testDataSndngMailVO;
+
+    @Override
+    public void setUp() {
+        super.setUp();
+
+        testDataSndngMailVO = new SndngMailVO();
+        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+
+        testDataSndngMailVO.setMssageId("TEST_000000000000001");
+        testDataSndngMailVO.setSj("test 이백행 제목 " + LocalDateTime.now()); // 제목 설정
+
+        if (loginVO != null) {
+            testDataSndngMailVO.setDsptchPerson(loginVO.getId());
+        }
+//        // 수신자 설정
+        testDataSndngMailVO.setRecptnPerson("egovframesupport@gmail.com"); // 수신자 설정
+//        sndngMailVO.setAtchFileId(_atchFileId); // 첨부파일ID 설정
+//        // 첨부파일명 설정
+//        sndngMailVO.setOrignlFileNm(orignlFileList);
+
+        // 발송메일을 등록
+        try {
+            sndngMailRegistDAO.insertSndngMail(testDataSndngMailVO);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            log.error("Exception insertSndngMail");
+            error((DataAccessException) e);
+            fail("Exception insertSndngMail 메일발신관리 생성이 실패하였습니다.");
+        }
+    }
 
     /**
      * 메일, 첨부파일 데이터 생성
@@ -211,9 +242,10 @@ public class SndngMailDetailDAOTest extends EgovTestAbstractDAO {
 //        // given
         final SndngMailVO sndngMailVO = new SndngMailVO();
 //        sndngMailVO.setSndngResultCode("R"); // 발송결과코드를 '요청'으로 설정
-        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
-        testData(sndngMailVO, loginVO);
-//
+//        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+//        testData(sndngMailVO, loginVO);
+        sndngMailVO.setMssageId(testDataSndngMailVO.getMssageId());
+
 //        // when
         SndngMailVO result = null;
         try {
