@@ -5,21 +5,25 @@ import static org.junit.Assert.fail;
 
 import java.time.LocalDateTime;
 
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
+import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 
 import egovframework.com.cmm.LoginVO;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import egovframework.com.cop.ems.service.SndngMailVO;
 import egovframework.com.test.EgovTestAbstractDAO;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @ImportResource({
 
-//        "classpath*:egovframework/spring/com/idgn/context-idgn-MailMsg.xml",
+        "classpath*:egovframework/spring/com/idgn/context-idgn-MailMsg.xml",
 //
 //        "classpath*:egovframework/spring/com/idgn/context-idgn-File.xml",
 //
@@ -81,9 +85,9 @@ import lombok.extern.slf4j.Slf4j;
 
 )
 
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Slf4j
-// @Commit
+@Commit
 public class SndngMailDetailDAOTest extends EgovTestAbstractDAO {
 //    /** EgovFileMngService */
 //    @Autowired
@@ -100,10 +104,10 @@ public class SndngMailDetailDAOTest extends EgovTestAbstractDAO {
 //    @Qualifier("egovFileIdGnrService")
 //    private EgovIdGnrService egovFileIdGnrService;
 //
-//    /** Message ID Generation */
-//    @Autowired
-//    @Qualifier("egovMailMsgIdGnrService")
-//    private EgovIdGnrService egovMailMsgIdGnrService;
+    /** Message ID Generation */
+    @Autowired
+    @Qualifier("egovMailMsgIdGnrService")
+    private EgovIdGnrService egovMailMsgIdGnrService;
 
     /** SndngMailRegistDAO */
     @Autowired
@@ -130,13 +134,14 @@ public class SndngMailDetailDAOTest extends EgovTestAbstractDAO {
     private void testData(final SndngMailVO sndngMailVO, final LoginVO loginVO) {
 //        // 메시지ID 설정
 //        String mssageId = "";
-//        try {
-//            mssageId = egovMailMsgIdGnrService.getNextStringId();
-//        } catch (FdlException eFdl) {
-//            log.error("FdlException egovMailMsgIdGnrService");
-//            fail("FdlException egovMailMsgIdGnrService");
-//        }
-        sndngMailVO.setMssageId("TEST_000000000000001");
+        try {
+            sndngMailVO.setMssageId(egovMailMsgIdGnrService.getNextStringId());
+        } catch (FdlException e) {
+//            e.printStackTrace();
+            log.error("FdlException egovMailMsgIdGnrService");
+            fail("FdlException egovMailMsgIdGnrService");
+        }
+//        sndngMailVO.setMssageId("TEST_000000000000001");
 //        /**
 //         * 발송결과코드(CDK-COM-024) 설정 R 요청 F 실패 C 완료
 //         **/
@@ -236,8 +241,7 @@ public class SndngMailDetailDAOTest extends EgovTestAbstractDAO {
     }
 
     private void assert1(final SndngMailVO sndngMailVO, final SndngMailVO result) {
-        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), sndngMailVO.getMssageId(),
-                result.getMssageId());
+        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), sndngMailVO.getMssageId(), result.getMssageId());
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "R", sndngMailVO.getSndngResultCode());
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "요청", resultSndngMailVO.getSndngResultCode());
     }
