@@ -275,7 +275,7 @@ public class SndngMailDtlsDAOTest extends EgovTestAbstractDAO {
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "C", sndngMailVO.getSndngResultCode());
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "완료", resultList.get(0).getSndngResultCode());
 
-        for (SndngMailVO result : resultList) {
+        for (final SndngMailVO result : resultList) {
             if (log.isDebugEnabled()) {
                 log.debug("sndngMailVO, result = {}, {}", testDataSndngMailVO, result);
                 log.debug("getMssageId = {}, {}", testDataSndngMailVO.getMssageId(), result.getMssageId());
@@ -291,12 +291,12 @@ public class SndngMailDtlsDAOTest extends EgovTestAbstractDAO {
                 result.getMssageId());
     }
 
-//    /**
-//     * 발송메일 총건수 조회 테스트
-//     */
-//
-//    @Test
-//    public void testSelectSndngMailListTotCnt() {
+    /**
+     * 발송메일 총건수 조회 테스트
+     */
+
+    @Test
+    public void testSelectSndngMailListTotCnt() {
 //        // given
 //        final SndngMailVO sndngMailVO = new SndngMailVO();
 //        sndngMailVO.setSndngResultCode("C"); // 발송결과코드를 '요청'으로 설정
@@ -304,10 +304,12 @@ public class SndngMailDtlsDAOTest extends EgovTestAbstractDAO {
 //        testData(sndngMailVO, loginVO);
 //
 //        // when
-//        ComDefaultVO comDefaultVO = new ComDefaultVO();
-//        int result = 0;
+        final ComDefaultVO comDefaultVO = new ComDefaultVO();
+        comDefaultVO.setSearchCondition("1");
+        comDefaultVO.setSearchKeyword(testDataSndngMailVO.getSj());
+        
 //        try {
-//            result = sndngMailDtlsDAO.selectSndngMailListTotCnt(comDefaultVO);
+        final int result = sndngMailDtlsDAO.selectSndngMailListTotCnt(comDefaultVO);
 //            if (log.isDebugEnabled()) {
 //                log.debug("sndngMailVO, result = {}, {}", sndngMailVO, result);
 //            }
@@ -318,7 +320,7 @@ public class SndngMailDtlsDAOTest extends EgovTestAbstractDAO {
 //        }
 //
 //        // then
-//        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 1, result);
-//    }
+        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 1, result);
+    }
 
 }

@@ -39,11 +39,11 @@ public class SndngMailDtlsDAO extends EgovComAbstractDAO {
 
 	/**
 	 * 발송메일 총건수를 조회한다.
-	 * @param vo ComDefaultVO
+	 * @param comDefaultVO ComDefaultVO
 	 * @return int
 	 * @exception
 	 */
-	public int selectSndngMailListTotCnt(ComDefaultVO vo) {
-		return (Integer) selectOne("SndngMailDtlsDAO.selectSndngMailListTotCnt_S", vo);
+	public int selectSndngMailListTotCnt(ComDefaultVO comDefaultVO) {
+		return selectOne("SndngMailDtlsDAO.selectSndngMailListTotCnt_S", comDefaultVO);
 	}
 }
