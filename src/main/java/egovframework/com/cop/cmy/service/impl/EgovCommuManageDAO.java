@@ -24,8 +24,8 @@ public class EgovCommuManageDAO extends EgovComAbstractDAO{
 		return (Integer)selectOne("CommuManage.checkExistUser", cmmntyUser);
 	}
 
-	public void insertCommuUserRqst(CommunityUser cmmntyUser) {
-		insert("CommuManage.insertCommuUserRqst", cmmntyUser);
+	public int insertCommuUserRqst(CommunityUser cmmntyUser) {
+		return insert("CommuManage.insertCommuUserRqst", cmmntyUser);
 	}
 
 	public List<CommunityUser> selectCommuUserList(CommunityUserVO cmmntyUserVO) {

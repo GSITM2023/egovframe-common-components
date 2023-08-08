@@ -14,7 +14,6 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 
 import egovframework.com.cmm.LoginVO;
@@ -265,15 +264,7 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
 
         // when
         // testData()에서 사용자가 생성되었으므로 생성이 되지 않는다.
-        int result = 1;
-        try {
-            egovCommuManageDAO.insertCommuUserRqst(cmmntyUser);
-        } catch (DataAccessException e) {
-//            e.printStackTrace();
-            log.error("DataAccessException insertCommuUserRqst");
-            error(e);
-            result = 0;
-        }
+        final int result = egovCommuManageDAO.insertCommuUserRqst(cmmntyUser);
 
         // then
         // DuplicateKeyException 발생
