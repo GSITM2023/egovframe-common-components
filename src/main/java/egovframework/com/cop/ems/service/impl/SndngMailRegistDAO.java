@@ -33,7 +33,7 @@ public class SndngMailRegistDAO extends EgovComAbstractDAO {
 	 * @return SndngMailVO
 	 * @exception Exception
 	 */
-	public SndngMailVO insertSndngMail(SndngMailVO vo) throws Exception {
+	public SndngMailVO insertSndngMail(SndngMailVO vo) {
 		insert("sndngMailRegistDAO.insertSndngMail", vo);
 		return new SndngMailVO() ;
 	}
