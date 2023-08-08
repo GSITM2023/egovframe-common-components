@@ -278,31 +278,33 @@ public class SndngMailDetailDAOTest extends EgovTestAbstractDAO {
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "요청", resultSndngMailVO.getSndngResultCode());
     }
 
-//    /**
-//     * 발송메일 삭제 테스트
-//     *
-//     */
-//    @Test
-//    public void testDeleteSndngMail() {
-//        // given
-//        final SndngMailVO sndngMailVO = new SndngMailVO();
+    /**
+     * 발송메일 삭제 테스트
+     *
+     */
+    @Test
+    public void testDeleteSndngMail() {
+        // given
+        final SndngMailVO sndngMailVO = new SndngMailVO();
 //        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
 //        testData(sndngMailVO, loginVO);
-//
-//        // when
-//        int result = 0;
-//        try {
-////			result = sndngMailDetailDAO.deleteSndngMail(sndngMailVO);
-//            sndngMailDetailDAO.deleteSndngMail(sndngMailVO);
-//            result = 1;
-//        } catch (Exception e) {
-//            // e.printStackTrace();
-//            log.error("Exception deleteSndngMail");
-//            // error(e);
-//            result = 0;
-//        }
-//
-//        // then
-//        assertEquals(egovMessageSource.getMessage("fail.common.delete"), 1, result);
-//    }
+        sndngMailVO.setMssageId(testDataSndngMailVO.getMssageId());
+
+        // when
+        int result = 0;
+        try {
+//			result = sndngMailDetailDAO.deleteSndngMail(sndngMailVO);
+            sndngMailDetailDAO.deleteSndngMail(sndngMailVO);
+            result = 1;
+        } catch (Exception e) {
+            // e.printStackTrace();
+            log.error("Exception deleteSndngMail");
+            error((DataAccessException) e);
+            fail("Exception deleteSndngMail");
+        }
+
+        // then
+        assertEquals(egovMessageSource.getMessage("fail.common.delete"), 1, result);
+    }
+
 }
