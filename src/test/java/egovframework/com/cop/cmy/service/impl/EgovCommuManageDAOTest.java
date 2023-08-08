@@ -404,22 +404,36 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
         assertEquals(egovMessageSource.getMessage("fail.common.update"), 1, result);
     }
 
-//    @Test
-//    public void testDeleteCommuUserAdmin() {
+    /**
+     * testDeleteCommuUserAdmin
+     */
+    @Test
+    public void testDeleteCommuUserAdmin() {
 //        // given
 //        CommunityUser communityUser = new CommunityUser();
 //        communityUser.setMngrAt("Y");    // 관리자
 //        communityUser.setMberSttus("P"); // 가입 승인 상태
 //        testData(communityUser);
+
+        final CommunityUser cmmntyUser = new CommunityUser();
+        final LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+        testUser(cmmntyUser, loginVO);
 //
-//        CommunityUserVO communityUserVO = new CommunityUserVO();
+        final CommunityUserVO communityUserVO = new CommunityUserVO();
 //        communityUserVO.setCmmntyId(communityUser.getCmmntyId());
 //        communityUserVO.setEmplyrId(communityUser.getEmplyrId());
 //        communityUserVO.setMngrAt(communityUser.getMngrAt());
 //        communityUserVO.setFirstIndex(0); // LIMIT 0부터 가져 오기
-//
+
+        if (loginVO != null) {
+            communityUserVO.setLastUpdusrId(loginVO.getUniqId());
+        }
+
+        communityUserVO.setCmmntyId(cmmntyUser.getCmmntyId());
+        communityUserVO.setEmplyrId(cmmntyUser.getEmplyrId());
+
 //        // when
-//        egovCommuManageDAO.deleteCommuUserAdmin(communityUserVO);
+        final int result = egovCommuManageDAO.deleteCommuUserAdmin(communityUserVO);
 //
 //        // then
 //        List<CommunityUser> resultList = egovCommuManageDAO.selectCommuUserList(communityUserVO);
@@ -428,5 +442,6 @@ public class EgovCommuManageDAOTest extends EgovTestAbstractDAO {
 //        assertTrue(egovMessageSource.getMessage(FAIL_COMMON_SELECT), 0 < resultList.size());
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "Y", communityUserVO.getMngrAt());
 //        assertEquals(egovMessageSource.getMessage(FAIL_COMMON_SELECT), "N", resultList.get(0).getMngrAt());
-//    }
+        assertEquals(egovMessageSource.getMessage("fail.common.update"), 1, result);
+    }
 }
