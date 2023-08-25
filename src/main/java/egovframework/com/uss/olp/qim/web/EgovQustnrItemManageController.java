@@ -5,6 +5,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.egovframe.rte.fdl.property.EgovPropertyService;
+import org.egovframe.rte.psl.dataaccess.util.EgovMap;
+import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +27,6 @@ import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import egovframework.com.uss.olp.qim.service.EgovQustnrItemManageService;
 import egovframework.com.uss.olp.qim.service.QustnrItemManageVO;
 import egovframework.com.utl.fcc.service.EgovStringUtil;
-import org.egovframe.rte.fdl.property.EgovPropertyService;
-import org.egovframe.rte.psl.dataaccess.util.EgovMap;
-import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 /**
  * 설문항목관리를 처리하는 Controller Class 구현
  * @author 공통서비스 장동한
@@ -252,11 +252,11 @@ public class EgovQustnrItemManageController {
         	egovQustnrItemManageService.updateQustnrItemManage(qustnrItemManageVO);
         	sLocationUrl = "redirect:/uss/olp/qim/EgovQustnrItemManageList.do";
         }else{
-            List<?> sampleList = egovQustnrItemManageService.selectQustnrItemManageDetail(qustnrItemManageVO);
+            List<EgovMap> sampleList = egovQustnrItemManageService.selectQustnrItemManageDetail(qustnrItemManageVO);
             model.addAttribute("resultList", sampleList);
 
         	//설문항목(을)를  정보 불러오기
-            List<?> listQustnrTmplat = egovQustnrItemManageService.selectQustnrTmplatManageList(qustnrItemManageVO);
+            List<EgovMap> listQustnrTmplat = egovQustnrItemManageService.selectQustnrTmplatManageList(qustnrItemManageVO);
             model.addAttribute("listQustnrTmplat", listQustnrTmplat);
         }
 
@@ -315,7 +315,7 @@ public class EgovQustnrItemManageController {
         	sLocationUrl = "redirect:/uss/olp/qim/EgovQustnrItemManageList.do";
         }else{
         	//설문항목(을)를  정보 불러오기
-            List<?> listQustnrTmplat = egovQustnrItemManageService.selectQustnrTmplatManageList(qustnrItemManageVO);
+            List<EgovMap> listQustnrTmplat = egovQustnrItemManageService.selectQustnrTmplatManageList(qustnrItemManageVO);
             model.addAttribute("listQustnrTmplat", listQustnrTmplat);
         }
 
